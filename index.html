@@ -131,6 +131,14 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
   min-height:32px;line-height:1.35;
 }
 
+.beststrip{
+  align-self:center;margin:12px 0 0;max-width:100%;padding:7px 13px;border-radius:999px;
+  background:rgba(255,255,255,.82);box-shadow:0 4px 12px rgba(58,96,180,.1);
+  font-size:11.5px;font-weight:800;color:#5b76a8;letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.beststrip b{color:#2a55e6;font-variant-numeric:tabular-nums}
+
 .chips{display:flex;gap:5px;margin:11px 0 0}
 .chip{
   flex:1 1 0;min-width:0;border:none;border-radius:14px;background:#fff;color:#5b76a8;
@@ -392,6 +400,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
           <div class="targetline" id="targetLine">목표 <b>10.00</b>초</div>
           <div class="clocknote" id="clockNote">숫자를 보고 감각을 익힌 뒤, 딱 맞춰 멈춰 봐!</div>
         </div>
+        <div class="beststrip" id="bestStrip">🏆 아직 기록이 없어요 — 첫 기록에 도전!</div>
       </div>
 
       <div class="chips" id="chips" role="group" aria-label="숫자 숨김 난이도">
@@ -652,11 +661,21 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
     else if (S.state === 'run') { b.innerHTML = '멈춰!!<small>딱 맞는 순간에 눌러!</small>'; b.classList.add('run'); }
     else { b.innerHTML = '시작!<small>3·2·1 뒤에 출발해요</small>'; }
   }
+  function renderBestStrip() {
+    var el = $('bestStrip'), b = save.best && save.best[keyOf(S.modeId, S.diffId)], m = modeById(S.modeId);
+    if (b) {
+      el.innerHTML = '🏆 ' + m.name + ' 최고 오차 <b>' + errText(b.err).value + '</b> · ' + b.score + '점';
+    } else {
+      el.textContent = '🏆 아직 기록이 없어요 — 첫 기록에 도전!';
+    }
+  }
+
   function renderAll() {
     renderModeTag();
     if (S.state === 'idle' || S.state === 'result') { $('clock').className = 'clock'; $('clock').textContent = fmtClock(S.elapsedMs); $('clockUnit').textContent = '초'; }
     renderClock();
     renderAction();
+    renderBestStrip();
   }
 
   function showPlay() {
@@ -846,6 +865,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
     writeStore();
     S.last = { err: errMs, grade: grade, score: score, txt: txt, isNew: isNew, rec: rec };
     renderResult();
+    renderBestStrip();
     updateTabs();
     var perfect = Math.abs(errMs) <= PERFECT_MS;
     if (perfect) {
@@ -1082,7 +1102,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
     keyOf: keyOf, randomTarget: randomTarget, randomPool: randomPool, maskedNow: maskedNow,
     setMode: setMode, setDiff: setDiff, start: start, stop: stop, cancelCount: cancelCount,
     loop: loop, beginRun: beginRun, prepareRound: prepareRound, finish: finish, retry: retry,
-    renderSheet: renderSheet, openSheet: openSheet, renderClock: renderClock,
+    renderSheet: renderSheet, openSheet: openSheet, renderClock: renderClock, renderBestStrip: renderBestStrip,
     PERFECT_MS: PERFECT_MS, COUNT_MS: COUNT_MS, PEEK_RATIO: PEEK_RATIO, MAXEXTRA_MS: MAXEXTRA_MS
   };
 
