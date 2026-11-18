@@ -499,9 +499,10 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
     return GRADES[GRADES.length - 1];
   }
   function scoreFor(errMs) {
+    /* 부드럽게 줄어드는 점수: 0ms=1000점, 0.5초≈930점, 1초≈240점… 아주 크게 틀려도 0점은 아니에요(아이들 사기). */
     var a = Math.abs(errMs);
     if (a === 0) { return 1000; }
-    return clamp(1000 - Math.round(a * 1000 / 1500), 0, 1000);
+    return clamp(Math.round(1000 * Math.exp(-a / 700)), 1, 1000);
   }
   function fmtSec(sec) {
     if (!isFinite(sec) || sec < 0) { sec = 0; }
